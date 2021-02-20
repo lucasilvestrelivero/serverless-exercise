@@ -1,16 +1,14 @@
 import 'source-map-support/register';
 
 import { middyfy } from '@libs/lambda';
-
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/apiGateway';
+import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import * as AWS from 'aws-sdk';
-import schema from './schema';
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 const groupsTable = process.env.GROUPS_TABLE;
 const imagesTable = process.env.IMAGES_TABLE;
 
-const getGroup: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
+const getImagesByGroupId: APIGatewayProxyHandler = async (event:APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.log('Caller event', event);
   const groupId = event.pathParameters.groupId;
 
@@ -39,8 +37,6 @@ const getGroup: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event
   };
 }
 
-export const main = middyfy(getGroup);
-
 async function groupExist(groupId: string) {
   const result = await docClient.get({
     TableName: groupsTable,
@@ -48,7 +44,7 @@ async function groupExist(groupId: string) {
       id: groupId
     }
   }).promise();
-
+  
   return !!result.Item;
 }
 
@@ -65,3 +61,4 @@ async function getImagesPerGroup(groupId: string) {
   return result.Items;
 }
 
+export const main = middyfy(getImagesByGroupId);

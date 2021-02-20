@@ -26,7 +26,8 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       GROUPS_TABLE: "Groups-${self:provider.stage}",
-      IMAGES_TABLE: "Images-${self:provider.stage}"
+      IMAGES_TABLE: "Images-${self:provider.stage}",
+      IMAGE_ID_INDEX: "imageIdIndex"
     },
     lambdaHashingVersion: '20201221',
     iamRoleStatements: [
@@ -37,8 +38,13 @@ const serverlessConfiguration: AWS = {
       },
       {
         Effect: "Allow",
-        Action: "dynamodb:Query",
+        Action: ["dynamodb:Query"],
         Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.IMAGES_TABLE}"
+      },
+      {
+        Effect: "Allow",
+        Action: ["dynamodb:Query"],
+        Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.IMAGES_TABLE}/index/${self:provider.environment.IMAGE_ID_INDEX}"
       }
     ]
   },
@@ -75,6 +81,10 @@ const serverlessConfiguration: AWS = {
             {
               AttributeName: "timestamp",
               AttributeType: "S"
+            },
+            {
+              AttributeName: "imageId",
+              AttributeType: "S"
             }
           ],
           keySchema: [
@@ -85,6 +95,20 @@ const serverlessConfiguration: AWS = {
             {
               AttributeName: "timestamp",
               KeyType: "RANGE"
+            },
+          ],
+          GlobalSecondarySchema: [
+            {
+              IndexName: "${self:provider.environment.IMAGE_ID_INDEX",
+              KeySchema: [
+                {
+                  AttributeName: "imageId",
+                  KeyType: "HASH"
+                }
+              ],
+              Projection: {
+                ProjectionType: "ALL"
+              }
             }
           ],
           BillingMode: "PAY_PER_REQUEST",
