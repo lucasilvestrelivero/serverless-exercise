@@ -5,7 +5,7 @@ export default {
     {
       http: {
         method: 'get',
-        path: 'groups',
+        path: 'groups/{groupId}/images',
         cors: true
       }
     }

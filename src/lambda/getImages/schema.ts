@@ -1,8 +1,7 @@
 export default {
   type: "object",
   properties: {
-    name: { type: 'string' },
-    description: { type: 'string' }
+    groupId: { type: 'string' }
   },
   required: []
 } as const;

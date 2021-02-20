@@ -1,34 +1,27 @@
 import 'source-map-support/register';
 
-import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
-import { v4 as uuidv4 } from 'uuid';
+import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
+import * as AWS from 'aws-sdk';
 
-import schema from './schema';
+const docClient = new AWS.DynamoDB.DocumentClient();
+const groupsTable = process.env.GROUPS_TABLE;
 
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/apiGateway';
+const getGroup: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+  console.log('Processing event: ', event);
 
-const getGroup: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
-  const listGroup = [
-    {
-      name: uuidv4(),
-      description: 'Test 1'
-    },
-    {
-      name: uuidv4(),
-      description: 'Test 2'
-    },
-    {
-      name: uuidv4(),
-      description: 'Test 3'
-    }
-  ]
+  const result = await docClient.scan({
+    TableName: groupsTable
+  }).promise();
+
+  const items = result.Items;
+  
   return {
     statusCode: 200,
     headers: {
-      'Acess-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*'
     },
-    body: JSON.stringify(listGroup)
+    body: JSON.stringify(items)
   };
 }
 
