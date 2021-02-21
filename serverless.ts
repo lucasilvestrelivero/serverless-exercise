@@ -38,7 +38,7 @@ const serverlessConfiguration: AWS = {
       },
       {
         Effect: "Allow",
-        Action: ["dynamodb:Query"],
+        Action: ["dynamodb:Query", "dynamodb:PutItem"],
         Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.IMAGES_TABLE}"
       },
       {
