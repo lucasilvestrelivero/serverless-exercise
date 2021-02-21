@@ -1,8 +1,6 @@
+import { createGroup, createImage, getGroup, getImagesByGroupId, getImagesById } from './src/lambda';
+
 import type { AWS } from '@serverless/typescript';
-
-import { hello } from './src/functions';
-
-import { createGroup, getGroup } from './src/lambda';
 
 const serverlessConfiguration: AWS = {
   service: 'serverless-exercise',
@@ -48,7 +46,7 @@ const serverlessConfiguration: AWS = {
       }
     ]
   },
-  functions: { hello, createGroup, getGroup},
+  functions: { createGroup, getGroup, createImage, getImagesById, getImagesByGroupId },
   resources: {
     Resources: {
       GroupsDynamoDBTable: {
