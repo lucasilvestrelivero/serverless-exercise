@@ -11,6 +11,12 @@ import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/apiGateway';
 const docClient = new AWS.DynamoDB.DocumentClient();
 const imagesTable = process.env.IMAGES_TABLE;
 const groupsTable = process.env.GROUPS_TABLE;
+const bucketName = process.env.IMAGE_S3_BUCKET;
+const ulrExpiration: number = +process.env.SIGNED_URL_EXPIRATION_SECONDS;
+
+const s3 = new AWS.S3({
+  signatureVersion: 'v4' // Use Sigv4 algorithm
+})
 
 const createImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (event) => {
   console.log('Processing event: ', event);
@@ -32,15 +38,16 @@ const createImage: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (ev
   }
 
   const itemId = uuidv4();
-
   const newImage = await saveImage(itemId, parsedBody);
+
+  const url = getUploadUrl(itemId);
 
   return {
     statusCode: 201,
     headers: {
       'Access-Control-Allow-Origin': '*'
     },
-    body: JSON.stringify(newImage)
+    body: JSON.stringify({item: newImage, uploadUrl: url})
   }
 }
 
@@ -62,7 +69,8 @@ async function saveImage(itemId: string, body: any) {
     imageId: itemId,
     groupId: body.groupId,
     timestamp: timestamp,
-    name: body.name
+    name: body.name,
+    imageUrl: `https://${bucketName}.s3.amazonaws.com/${itemId}`
   }
 
   console.log('Storing new Item: ', newImage)
@@ -74,6 +82,12 @@ async function saveImage(itemId: string, body: any) {
   return newImage;
 }
 
+function getUploadUrl(itemId: string) {
+  return s3.getSignedUrl('putObject', {
+    Bucket: bucketName,
+    Key: itemId,
+    Expires: ulrExpiration
+  })
+}
+
 export const main = middyfy(createImage);
-
-
