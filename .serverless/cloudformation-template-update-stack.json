@@ -107,6 +107,18 @@
         "LogGroupName": "/aws/lambda/serverless-exercise-dev-SendUploadNotification"
       }
     },
+    "ConnectHandlerLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/serverless-exercise-dev-ConnectHandler"
+      }
+    },
+    "DisconnectHandlerLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/serverless-exercise-dev-DisconnectHandler"
+      }
+    },
     "IamRoleLambdaExecution": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -195,6 +207,26 @@
                     "s3:GetObject"
                   ],
                   "Resource": "arn:aws:s3:::serverless-udagram-images/*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:Scan",
+                    "dynamodb:PutItem",
+                    "dynamodb:DeleteItem"
+                  ],
+                  "Resource": "arn:aws:dynamodb:sa-east-1:*:table/Connections-dev"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "execute-api:ManageConnections"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:execute-api:*:*:*/@connections/*"
+                    }
+                  ]
                 }
               ]
             }
@@ -223,7 +255,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-exercise/dev/1614110669672-2021-02-23T20:04:29.672Z/serverless-exercise.zip"
+          "S3Key": "serverless/serverless-exercise/dev/1614138101740-2021-02-24T03:41:41.740Z/serverless-exercise.zip"
         },
         "Handler": "src/lambda/CreateGroup/handler.main",
         "Runtime": "nodejs14.x",
@@ -235,6 +267,7 @@
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "GROUPS_TABLE": "Groups-dev",
             "IMAGES_TABLE": "Images-dev",
+            "CONNECTION_TABLE": "Connections-dev",
             "IMAGE_ID_INDEX": "ImageIdIndex",
             "IMAGE_S3_BUCKET": "serverless-udagram-images",
             "SIGNED_URL_EXPIRATION_SECONDS": "300"
@@ -258,7 +291,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-exercise/dev/1614110669672-2021-02-23T20:04:29.672Z/serverless-exercise.zip"
+          "S3Key": "serverless/serverless-exercise/dev/1614138101740-2021-02-24T03:41:41.740Z/serverless-exercise.zip"
         },
         "Handler": "src/lambda/CreateImage/handler.main",
         "Runtime": "nodejs14.x",
@@ -270,6 +303,7 @@
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "GROUPS_TABLE": "Groups-dev",
             "IMAGES_TABLE": "Images-dev",
+            "CONNECTION_TABLE": "Connections-dev",
             "IMAGE_ID_INDEX": "ImageIdIndex",
             "IMAGE_S3_BUCKET": "serverless-udagram-images",
             "SIGNED_URL_EXPIRATION_SECONDS": "300"
@@ -293,7 +327,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-exercise/dev/1614110669672-2021-02-23T20:04:29.672Z/serverless-exercise.zip"
+          "S3Key": "serverless/serverless-exercise/dev/1614138101740-2021-02-24T03:41:41.740Z/serverless-exercise.zip"
         },
         "Handler": "src/lambda/GetGroup/handler.main",
         "Runtime": "nodejs14.x",
@@ -305,6 +339,7 @@
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "GROUPS_TABLE": "Groups-dev",
             "IMAGES_TABLE": "Images-dev",
+            "CONNECTION_TABLE": "Connections-dev",
             "IMAGE_ID_INDEX": "ImageIdIndex",
             "IMAGE_S3_BUCKET": "serverless-udagram-images",
             "SIGNED_URL_EXPIRATION_SECONDS": "300"
@@ -328,7 +363,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-exercise/dev/1614110669672-2021-02-23T20:04:29.672Z/serverless-exercise.zip"
+          "S3Key": "serverless/serverless-exercise/dev/1614138101740-2021-02-24T03:41:41.740Z/serverless-exercise.zip"
         },
         "Handler": "src/lambda/GetImageById/handler.main",
         "Runtime": "nodejs14.x",
@@ -340,6 +375,7 @@
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "GROUPS_TABLE": "Groups-dev",
             "IMAGES_TABLE": "Images-dev",
+            "CONNECTION_TABLE": "Connections-dev",
             "IMAGE_ID_INDEX": "ImageIdIndex",
             "IMAGE_S3_BUCKET": "serverless-udagram-images",
             "SIGNED_URL_EXPIRATION_SECONDS": "300"
@@ -363,7 +399,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-exercise/dev/1614110669672-2021-02-23T20:04:29.672Z/serverless-exercise.zip"
+          "S3Key": "serverless/serverless-exercise/dev/1614138101740-2021-02-24T03:41:41.740Z/serverless-exercise.zip"
         },
         "Handler": "src/lambda/GetImagesByGroupId/handler.main",
         "Runtime": "nodejs14.x",
@@ -375,6 +411,7 @@
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "GROUPS_TABLE": "Groups-dev",
             "IMAGES_TABLE": "Images-dev",
+            "CONNECTION_TABLE": "Connections-dev",
             "IMAGE_ID_INDEX": "ImageIdIndex",
             "IMAGE_S3_BUCKET": "serverless-udagram-images",
             "SIGNED_URL_EXPIRATION_SECONDS": "300"
@@ -398,7 +435,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-exercise/dev/1614110669672-2021-02-23T20:04:29.672Z/serverless-exercise.zip"
+          "S3Key": "serverless/serverless-exercise/dev/1614138101740-2021-02-24T03:41:41.740Z/serverless-exercise.zip"
         },
         "Handler": "src/lambda/SendNotification/handler.main",
         "Runtime": "nodejs14.x",
@@ -410,9 +447,14 @@
             "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
             "GROUPS_TABLE": "Groups-dev",
             "IMAGES_TABLE": "Images-dev",
+            "CONNECTION_TABLE": "Connections-dev",
             "IMAGE_ID_INDEX": "ImageIdIndex",
             "IMAGE_S3_BUCKET": "serverless-udagram-images",
-            "SIGNED_URL_EXPIRATION_SECONDS": "300"
+            "SIGNED_URL_EXPIRATION_SECONDS": "300",
+            "STAGE": "dev",
+            "API_ID": {
+              "Ref": "WebsocketsApi"
+            }
           }
         },
         "Role": {
@@ -426,64 +468,156 @@
         "SendUploadNotificationLogGroup"
       ]
     },
-    "CreateGroupLambdaVersionC8xiXnmmtZdLEAxWPNevxu6Db2Sp4Xcyuj5GG3Y14mU": {
+    "ConnectHandlerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/serverless-exercise/dev/1614138101740-2021-02-24T03:41:41.740Z/serverless-exercise.zip"
+        },
+        "Handler": "src/lambda/WebSocket/Connect/handler.main",
+        "Runtime": "nodejs14.x",
+        "FunctionName": "serverless-exercise-dev-ConnectHandler",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "GROUPS_TABLE": "Groups-dev",
+            "IMAGES_TABLE": "Images-dev",
+            "CONNECTION_TABLE": "Connections-dev",
+            "IMAGE_ID_INDEX": "ImageIdIndex",
+            "IMAGE_S3_BUCKET": "serverless-udagram-images",
+            "SIGNED_URL_EXPIRATION_SECONDS": "300"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ConnectHandlerLogGroup"
+      ]
+    },
+    "DisconnectHandlerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/serverless-exercise/dev/1614138101740-2021-02-24T03:41:41.740Z/serverless-exercise.zip"
+        },
+        "Handler": "src/lambda/WebSocket/Disconnect/handler.main",
+        "Runtime": "nodejs14.x",
+        "FunctionName": "serverless-exercise-dev-DisconnectHandler",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "GROUPS_TABLE": "Groups-dev",
+            "IMAGES_TABLE": "Images-dev",
+            "CONNECTION_TABLE": "Connections-dev",
+            "IMAGE_ID_INDEX": "ImageIdIndex",
+            "IMAGE_S3_BUCKET": "serverless-udagram-images",
+            "SIGNED_URL_EXPIRATION_SECONDS": "300"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "DisconnectHandlerLogGroup"
+      ]
+    },
+    "CreateGroupLambdaVersionMpNdiCpKJEvFYRGCjvGVc9e9TbgGMtjhIDmeF5VWE": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateGroupLambdaFunction"
         },
-        "CodeSha256": "cDJTsk8PSM1IA91lNAELreO54UxaLq2p5N+KxFvC8lw="
+        "CodeSha256": "ory54NShLWoY2h4f2vO7A8jNGsWKUxbJX7fedVMp3hY="
       }
     },
-    "CreateImageLambdaVersionwAbaV4phJaluKNUJburA1CZ3WtdmiGwS32wtqRj5s": {
+    "CreateImageLambdaVersiondxyhI9OYm58VD7uP9JyLqDucBfoefb3TxAP47mS3w": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateImageLambdaFunction"
         },
-        "CodeSha256": "cDJTsk8PSM1IA91lNAELreO54UxaLq2p5N+KxFvC8lw="
+        "CodeSha256": "ory54NShLWoY2h4f2vO7A8jNGsWKUxbJX7fedVMp3hY="
       }
     },
-    "GetGroupLambdaVersionQJxiHwUVgnz00FGzwP5w75N66fbw0kzBljHueDMik": {
+    "GetGroupLambdaVersionBidt0Ma1Dca9bGg5yiXmrOKYwITgyv8EpjiZNlpIhqg": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetGroupLambdaFunction"
         },
-        "CodeSha256": "cDJTsk8PSM1IA91lNAELreO54UxaLq2p5N+KxFvC8lw="
+        "CodeSha256": "ory54NShLWoY2h4f2vO7A8jNGsWKUxbJX7fedVMp3hY="
       }
     },
-    "GetImagesByIdLambdaVersionn8fzKSnv05Jq7zmNoZebDt6VwUpID89VxftYwLO7DQ": {
+    "GetImagesByIdLambdaVersionYxSob5G9fZyyfSzJGHmfcs5Db3W9GSueZeK6UFm19Y": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetImagesByIdLambdaFunction"
         },
-        "CodeSha256": "cDJTsk8PSM1IA91lNAELreO54UxaLq2p5N+KxFvC8lw="
+        "CodeSha256": "ory54NShLWoY2h4f2vO7A8jNGsWKUxbJX7fedVMp3hY="
       }
     },
-    "GetImagesByGroupIdLambdaVersion82AZJ99ykim7R9SVVNFEcq8L9NrmKd7JgNsUTIca0": {
+    "GetImagesByGroupIdLambdaVersionieo7DO3pcwxxdRoaQk2WVmUl75bqrsJg1rtcTYVLw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetImagesByGroupIdLambdaFunction"
         },
-        "CodeSha256": "cDJTsk8PSM1IA91lNAELreO54UxaLq2p5N+KxFvC8lw="
+        "CodeSha256": "ory54NShLWoY2h4f2vO7A8jNGsWKUxbJX7fedVMp3hY="
       }
     },
-    "SendUploadNotificationLambdaVersionpEinIw4DYArKyc6Xs1Bl2MFXZtldKyyyT1JA2EwtEcA": {
+    "SendUploadNotificationLambdaVersionGYVmDpZUM6t0DxydnmcYa91yQAzb1CnRzYgQKtnSN0": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "SendUploadNotificationLambdaFunction"
         },
-        "CodeSha256": "cDJTsk8PSM1IA91lNAELreO54UxaLq2p5N+KxFvC8lw="
+        "CodeSha256": "ory54NShLWoY2h4f2vO7A8jNGsWKUxbJX7fedVMp3hY="
+      }
+    },
+    "ConnectHandlerLambdaVersionKYLhvFYxxgvTRb983zUM1R38dI1surmODKWPsvuMQPA": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ConnectHandlerLambdaFunction"
+        },
+        "CodeSha256": "ory54NShLWoY2h4f2vO7A8jNGsWKUxbJX7fedVMp3hY="
+      }
+    },
+    "DisconnectHandlerLambdaVersion2DjtEP1K3hWsBKrQYqQlwJw19RJwRDElOlQ3DNfGeE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "DisconnectHandlerLambdaFunction"
+        },
+        "CodeSha256": "ory54NShLWoY2h4f2vO7A8jNGsWKUxbJX7fedVMp3hY="
       }
     },
     "ApiGatewayRestApi": {
@@ -1044,7 +1178,7 @@
         "MethodResponses": []
       }
     },
-    "ApiGatewayDeployment1614110664731": {
+    "ApiGatewayDeployment1614138093960": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -1249,6 +1383,181 @@
         }
       }
     },
+    "WebsocketsApi": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "dev-serverless-exercise-websockets",
+        "RouteSelectionExpression": "$request.body.action",
+        "Description": "Serverless Websockets",
+        "ProtocolType": "WEBSOCKET"
+      }
+    },
+    "ConnectHandlerWebsocketsIntegration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "WebsocketsApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "ConnectHandlerLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
+          ]
+        }
+      }
+    },
+    "DisconnectHandlerWebsocketsIntegration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "WebsocketsApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Fn::GetAtt": [
+                  "DisconnectHandlerLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "/invocations"
+            ]
+          ]
+        }
+      }
+    },
+    "ConnectHandlerLambdaPermissionWebsockets": {
+      "Type": "AWS::Lambda::Permission",
+      "DependsOn": [
+        "WebsocketsApi",
+        "ConnectHandlerLambdaFunction"
+      ],
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ConnectHandlerLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com"
+      }
+    },
+    "DisconnectHandlerLambdaPermissionWebsockets": {
+      "Type": "AWS::Lambda::Permission",
+      "DependsOn": [
+        "WebsocketsApi",
+        "DisconnectHandlerLambdaFunction"
+      ],
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "DisconnectHandlerLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com"
+      }
+    },
+    "SconnectWebsocketsRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "WebsocketsApi"
+        },
+        "RouteKey": "$connect",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "ConnectHandlerWebsocketsIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "SdisconnectWebsocketsRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "WebsocketsApi"
+        },
+        "RouteKey": "$disconnect",
+        "AuthorizationType": "NONE",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "DisconnectHandlerWebsocketsIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "WebsocketsDeploymentStage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "WebsocketsApi"
+        },
+        "StageName": "dev",
+        "Description": "Serverless Websockets",
+        "DeploymentId": {
+          "Ref": "WebsocketsDeploymentPbD1JbTIXD1ZCzTro7LjwnKmsJzqK3BzahrcJ0yGI"
+        }
+      }
+    },
+    "WebsocketsDeploymentPbD1JbTIXD1ZCzTro7LjwnKmsJzqK3BzahrcJ0yGI": {
+      "Type": "AWS::ApiGatewayV2::Deployment",
+      "DependsOn": [
+        "SconnectWebsocketsRoute",
+        "SdisconnectWebsocketsRoute"
+      ],
+      "Properties": {
+        "ApiId": {
+          "Ref": "WebsocketsApi"
+        },
+        "Description": "Serverless Websockets"
+      }
+    },
     "GroupsDynamoDBTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
@@ -1386,6 +1695,24 @@
           "Ref": "AttachmentsBucket"
         }
       }
+    },
+    "WebSocketConnectionsDynamoDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST"
+      }
     }
   },
   "Outputs": {
@@ -1397,37 +1724,49 @@
     "CreateGroupLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateGroupLambdaVersionC8xiXnmmtZdLEAxWPNevxu6Db2Sp4Xcyuj5GG3Y14mU"
+        "Ref": "CreateGroupLambdaVersionMpNdiCpKJEvFYRGCjvGVc9e9TbgGMtjhIDmeF5VWE"
       }
     },
     "CreateImageLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateImageLambdaVersionwAbaV4phJaluKNUJburA1CZ3WtdmiGwS32wtqRj5s"
+        "Ref": "CreateImageLambdaVersiondxyhI9OYm58VD7uP9JyLqDucBfoefb3TxAP47mS3w"
       }
     },
     "GetGroupLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetGroupLambdaVersionQJxiHwUVgnz00FGzwP5w75N66fbw0kzBljHueDMik"
+        "Ref": "GetGroupLambdaVersionBidt0Ma1Dca9bGg5yiXmrOKYwITgyv8EpjiZNlpIhqg"
       }
     },
     "GetImagesByIdLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetImagesByIdLambdaVersionn8fzKSnv05Jq7zmNoZebDt6VwUpID89VxftYwLO7DQ"
+        "Ref": "GetImagesByIdLambdaVersionYxSob5G9fZyyfSzJGHmfcs5Db3W9GSueZeK6UFm19Y"
       }
     },
     "GetImagesByGroupIdLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetImagesByGroupIdLambdaVersion82AZJ99ykim7R9SVVNFEcq8L9NrmKd7JgNsUTIca0"
+        "Ref": "GetImagesByGroupIdLambdaVersionieo7DO3pcwxxdRoaQk2WVmUl75bqrsJg1rtcTYVLw"
       }
     },
     "SendUploadNotificationLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "SendUploadNotificationLambdaVersionpEinIw4DYArKyc6Xs1Bl2MFXZtldKyyyT1JA2EwtEcA"
+        "Ref": "SendUploadNotificationLambdaVersionGYVmDpZUM6t0DxydnmcYa91yQAzb1CnRzYgQKtnSN0"
+      }
+    },
+    "ConnectHandlerLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ConnectHandlerLambdaVersionKYLhvFYxxgvTRb983zUM1R38dI1surmODKWPsvuMQPA"
+      }
+    },
+    "DisconnectHandlerLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "DisconnectHandlerLambdaVersion2DjtEP1K3hWsBKrQYqQlwJw19RJwRDElOlQ3DNfGeE"
       }
     },
     "ServiceEndpoint": {
@@ -1439,6 +1778,29 @@
             "https://",
             {
               "Ref": "ApiGatewayRestApi"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/dev"
+          ]
+        ]
+      }
+    },
+    "ServiceEndpointWebsocket": {
+      "Description": "URL of the service endpoint",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "wss://",
+            {
+              "Ref": "WebsocketsApi"
             },
             ".execute-api.",
             {

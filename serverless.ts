@@ -4,7 +4,9 @@ import {
   GetGroup,
   GetImagesByGroupId,
   GetImagesById,
-  SendUploadNotification 
+  SendUploadNotification,
+  ConnectHandler,
+  DisconnectHandler
 } from './src/lambda';
 
 import type { AWS } from '@serverless/typescript';
@@ -32,6 +34,7 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       GROUPS_TABLE: "Groups-${self:provider.stage}",
       IMAGES_TABLE: "Images-${self:provider.stage}",
+      CONNECTION_TABLE: "Connections-${self:provider.stage}",
       IMAGE_ID_INDEX: "ImageIdIndex",
       IMAGE_S3_BUCKET: "serverless-udagram-images",
       SIGNED_URL_EXPIRATION_SECONDS: "300"
@@ -57,6 +60,11 @@ const serverlessConfiguration: AWS = {
         Effect: "Allow",
         Action: ["s3:PutObject", "s3:GetObject"],
         Resource: "arn:aws:s3:::${self:provider.environment.IMAGE_S3_BUCKET}/*"
+      },
+      {
+        Effect: "Allow",
+        Action: ["dynamodb:Scan", "dynamodb:PutItem", "dynamodb:DeleteItem"],
+        Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.CONNECTION_TABLE}"
       }
     ]
   },
@@ -66,7 +74,9 @@ const serverlessConfiguration: AWS = {
     GetGroup,
     GetImagesById,
     GetImagesByGroupId,
-    SendUploadNotification
+    SendUploadNotification,
+    ConnectHandler,
+    DisconnectHandler
   },
   resources: {
     Resources: {
@@ -191,6 +201,25 @@ const serverlessConfiguration: AWS = {
             ]
           },
           Bucket: { Ref: "AttachmentsBucket" }
+        }
+      },
+      WebSocketConnectionsDynamoDBTable: {
+        Type: "AWS::DynamoDB::Table",
+        Properties: {
+          AttributeDefinitions: [
+            {
+              AttributeName: "id",
+              AttributeType: "S"
+            }
+          ],
+          KeySchema: [
+            {
+              AttributeName: "id",
+              KeyType: "HASH"
+            }
+          ],
+          BillingMode: "PAY_PER_REQUEST",
+          TableName: "${self:provider.environment.CONNECTIONS_TABLE}"
         }
       }
     }
