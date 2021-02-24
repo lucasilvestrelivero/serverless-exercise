@@ -1,5 +1,7 @@
-export { default as createGroup } from './CreateGroup';
-export { default as getGroup } from './GetGroup';
-export { default as createImage } from './CreateImage';
-export { default as getImagesById } from './GetImageById';
-export { default as getImagesByGroupId } from './GetImagesByGroupId';
+export { default as CreateGroup } from './CreateGroup';
+export { default as GetGroup } from './GetGroup';
+export { default as CreateImage } from './CreateImage';
+export { default as GetImagesById } from './GetImageById';
+export { default as GetImagesByGroupId } from './GetImagesByGroupId';
+export { default as SendUploadNotification } from './SendNotification';
+

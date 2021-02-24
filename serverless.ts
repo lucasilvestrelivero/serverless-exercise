@@ -1,4 +1,11 @@
-import { createGroup, createImage, getGroup, getImagesByGroupId, getImagesById } from './src/lambda';
+import { 
+  CreateGroup,
+  CreateImage, 
+  GetGroup,
+  GetImagesByGroupId,
+  GetImagesById,
+  SendUploadNotification 
+} from './src/lambda';
 
 import type { AWS } from '@serverless/typescript';
 
@@ -53,7 +60,14 @@ const serverlessConfiguration: AWS = {
       }
     ]
   },
-  functions: { createGroup, getGroup, createImage, getImagesById, getImagesByGroupId },
+  functions: {
+    CreateGroup,
+    CreateImage,
+    GetGroup,
+    GetImagesById,
+    GetImagesByGroupId,
+    SendUploadNotification
+  },
   resources: {
     Resources: {
       GroupsDynamoDBTable: {
@@ -124,6 +138,14 @@ const serverlessConfiguration: AWS = {
         Type: "AWS::S3::Bucket",
         Properties: {
           BucketName: "${self:provider.environment.IMAGE_S3_BUCKET}",
+          NotificationConfiguration: {
+            LambdaConfigurations: [
+              {
+                Event: "s3:ObjectCreated:*",
+                Function: {"Fn::GetAtt": ["SendUploadNotificationLambdaFunction", "Arn"]}
+              }
+            ]
+          },
           CorsConfiguration: {
             CorsRules: [
               {
@@ -140,6 +162,16 @@ const serverlessConfiguration: AWS = {
               }
             ]
           }
+        }
+      },
+      SendUploadNotificationPermission: {
+        Type: "AWS::Lambda::Permission",
+        Properties: {
+          FunctionName: {Ref: "SendUploadNotificationLambdaFunction"},
+          Principal: "s3.amazonaws.com",
+          Action: "lambda:InvokeFunction",
+          SourceAccount: {Ref: "AWS::AccountId"},
+          SourceArn: "arn:aws:s3:::${self:provider.environment.IMAGE_S3_BUCKET}"
         }
       },
       BucketPolicy: {
