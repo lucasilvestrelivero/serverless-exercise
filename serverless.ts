@@ -37,7 +37,24 @@ const serverlessConfiguration: AWS = {
       CONNECTION_TABLE: "Connections-${self:provider.stage}",
       IMAGE_ID_INDEX: "ImageIdIndex",
       IMAGE_S3_BUCKET: "serverless-udagram-images",
-      SIGNED_URL_EXPIRATION_SECONDS: "300"
+      SIGNED_URL_EXPIRATION_SECONDS: "300",
+      TOPIC_NAME: "imagesTopic-${self:provider.stage}",
+      API_ENDPOINT: {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Ref": "WebsocketsApi"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazonaws.com/",
+            "${self:provider.stage}"
+          ]
+        ]
+      }
     },
     lambdaHashingVersion: '20201221',
     iamRoleStatements: [
@@ -146,13 +163,14 @@ const serverlessConfiguration: AWS = {
       },
       AttachmentsBucket: {
         Type: "AWS::S3::Bucket",
+        DependsOn: ["SNSTopicPolicy"],
         Properties: {
           BucketName: "${self:provider.environment.IMAGE_S3_BUCKET}",
           NotificationConfiguration: {
-            LambdaConfigurations: [
+            TopicConfigurations: [
               {
-                Event: "s3:ObjectCreated:*",
-                Function: {"Fn::GetAtt": ["SendUploadNotificationLambdaFunction", "Arn"]}
+                Event: "s3:ObjectCreated:Put",
+                Topic: { Ref: "ImagesTopic" }
               }
             ]
           },
@@ -172,16 +190,6 @@ const serverlessConfiguration: AWS = {
               }
             ]
           }
-        }
-      },
-      SendUploadNotificationPermission: {
-        Type: "AWS::Lambda::Permission",
-        Properties: {
-          FunctionName: {Ref: "SendUploadNotificationLambdaFunction"},
-          Principal: "s3.amazonaws.com",
-          Action: "lambda:InvokeFunction",
-          SourceAccount: {Ref: "AWS::AccountId"},
-          SourceArn: "arn:aws:s3:::${self:provider.environment.IMAGE_S3_BUCKET}"
         }
       },
       BucketPolicy: {
@@ -219,7 +227,41 @@ const serverlessConfiguration: AWS = {
             }
           ],
           BillingMode: "PAY_PER_REQUEST",
-          TableName: "${self:provider.environment.CONNECTIONS_TABLE}"
+          TableName: "${self:provider.environment.CONNECTION_TABLE}"
+        }
+      },
+      ImagesTopic: {
+        Type: "AWS::SNS::Topic",
+        Properties: {
+          DisplayName: "Image bucket topic",
+          TopicName: "${self:provider.environment.TOPIC_NAME}"
+        }
+      },
+      SNSTopicPolicy: {
+        Type: "AWS::SNS::TopicPolicy",
+        Properties: {
+          PolicyDocument: {
+            Id: "MyPolicyImageSNS",
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Principal: {
+                  AWS: "*"
+                },
+                Action: "sns:Publish",
+                Resource: { Ref: "ImagesTopic" },
+                Condition: {
+                  ArnLike: {
+                    "AWS:SourceArn": "arn:aws:s3:::${self:provider.environment.IMAGE_S3_BUCKET}"
+                  }
+                }
+              }
+            ]
+          },
+          Topics: [
+            { Ref: "ImagesTopic" }
+          ]
         }
       }
     }
