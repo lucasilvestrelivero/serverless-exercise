@@ -39,6 +39,7 @@ const serverlessConfiguration: AWS = {
       IMAGE_S3_BUCKET: "serverless-udagram-images",
       SIGNED_URL_EXPIRATION_SECONDS: "300",
       TOPIC_NAME: "imagesTopic-${self:provider.stage}",
+      THUMBNAILS_S3_BUCKET: "serverless-udagram-thumbnail",
       API_ENDPOINT: {
         "Fn::Join": [
           "",
@@ -77,6 +78,11 @@ const serverlessConfiguration: AWS = {
         Effect: "Allow",
         Action: ["s3:PutObject", "s3:GetObject"],
         Resource: "arn:aws:s3:::${self:provider.environment.IMAGE_S3_BUCKET}/*"
+      },
+      {
+        Effect: "Allow",
+        Action: ["s3:PutObject", "s3:GetObject"],
+        Resource: "arn:aws:s3:::${self:provider.environment.THUMBNAILS_S3_BUCKET}/*"
       },
       {
         Effect: "Allow",
@@ -209,6 +215,12 @@ const serverlessConfiguration: AWS = {
             ]
           },
           Bucket: { Ref: "AttachmentsBucket" }
+        }
+      },
+      ThumbnailsBucket: {
+        Type: "AWS::S3::Bucket",
+        Properties: {
+          BucketName: "${self:provider.environment.THUMBNAILS_S3_BUCKET}",
         }
       },
       WebSocketConnectionsDynamoDBTable: {
