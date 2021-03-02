@@ -6,5 +6,6 @@ export { default as GetImagesByGroupId } from './GetImagesByGroupId';
 export { default as SendUploadNotification } from './SendNotification';
 export { default as ConnectHandler } from './WebSocket/Connect';
 export { default as DisconnectHandler } from './WebSocket/Disconnect';
+export { default as Authorization } from './Authorization';
 
 
